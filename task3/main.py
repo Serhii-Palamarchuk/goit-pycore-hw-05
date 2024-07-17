@@ -8,6 +8,21 @@ import re
 from typing import List, Dict, Callable
 
 def parse_log_line(line: str) -> Dict[str, str]:
+    """
+    Parses a log line and returns a dictionary containing the parsed components.
+
+    Args:
+        line (str): The log line to be parsed.
+
+    Returns:
+        dict: A dictionary containing the parsed components of the log line.
+              The dictionary has the following keys:
+              - 'date': The date component of the log line.
+              - 'time': The time component of the log line.
+              - 'level': The level component of the log line.
+              - 'message': The message component of the log line.
+
+    """
     # Парсимо рядок логу на складові: дата, час, рівень, повідомлення
     match = re.match(r'(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) (\w+) (.+)', line)
     if match:
@@ -20,6 +35,15 @@ def parse_log_line(line: str) -> Dict[str, str]:
     return {}
 
 def load_logs(file_path: str) -> List[Dict[str, str]]:
+    """
+    Load logs from a file and return a list of dictionaries representing each log entry.
+
+    Args:
+        file_path (str): The path to the log file.
+
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries representing each log entry.
+    """
     logs = []
     try:
         with open(file_path, 'r') as file:
@@ -34,9 +58,29 @@ def load_logs(file_path: str) -> List[Dict[str, str]]:
     return logs
 
 def filter_logs_by_level(logs: List[Dict[str, str]], level: str) -> List[Dict[str, str]]:
+    """
+    Filters a list of logs based on the specified log level.
+
+    Args:
+        logs (List[Dict[str, str]]): A list of logs, where each log is represented as a dictionary.
+        level (str): The log level to filter by.
+
+    Returns:
+        List[Dict[str, str]]: A filtered list of logs that match the specified log level.
+    """
     return [log for log in logs if log['level'].lower() == level.lower()]
 
 def count_logs_by_level(logs: List[Dict[str, str]]) -> Dict[str, int]:
+    """
+    Count the number of logs for each log level.
+
+    Args:
+        logs (List[Dict[str, str]]): A list of log dictionaries, where each dictionary represents a log entry.
+
+    Returns:
+        Dict[str, int]: A dictionary containing the count of logs for each log level. The keys are log levels
+        (e.g., 'INFO', 'ERROR', 'DEBUG', 'WARNING') and the values are the corresponding counts.
+    """
     levels = ['INFO', 'ERROR', 'DEBUG', 'WARNING']
     counts = {level: 0 for level in levels}
     for log in logs:
@@ -45,12 +89,28 @@ def count_logs_by_level(logs: List[Dict[str, str]]) -> Dict[str, int]:
     return counts
 
 def display_log_counts(counts: Dict[str, int]):
+    """
+    Display the log counts for each log level.
+
+    Args:
+        counts (Dict[str, int]): A dictionary containing the log levels and their respective counts.
+
+    Returns:
+        None
+    """
     print("Рівень логування | Кількість")
     print("-----------------|----------")
     for level, count in counts.items():
         print(f"{level:<16} | {count}")
 
 def main():
+    """
+    Entry point of the program.
+    
+    This function takes command line arguments, loads logs from a file, counts the logs by level,
+    and displays the log counts. If a log level is provided, it filters the logs by that level
+    and displays the filtered logs.
+    """
     if len(sys.argv) < 2:
         print("Usage: python main.py <path_to_logfile> [log_level]")
         return
