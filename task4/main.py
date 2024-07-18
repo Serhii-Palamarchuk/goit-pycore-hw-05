@@ -1,3 +1,36 @@
+# Завдання 4
+# Доробіть консольного бота помічника з попереднього домашнього завдання та додайте обробку помилок за допомоги декораторів.
+
+def input_error(func):
+    """
+    A decorator function that handles common input errors.
+
+    Parameters:
+    func (function): The function to be decorated.
+
+    Returns:
+    function: The decorated function.
+
+    Raises:
+    KeyError: If a key error occurs.
+    ValueError: If a value error occurs.
+    IndexError: If an index error occurs.
+    Exception: If any other exception occurs.
+    """
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError as e:
+            return str(e)
+        except ValueError as e:
+            return str(e)
+        except IndexError as e:
+            return str(e)
+        except Exception as e:
+            return "An error occurred. Please try again."
+    return inner
+
+@input_error
 def parse_input(user_input):
     """
     Parses the user input and returns the command and arguments.
@@ -16,6 +49,7 @@ def parse_input(user_input):
     cmd = cmd.strip().lower()
     return cmd, args
 
+@input_error
 def add_contact(args, contacts):
     """
     Add a new contact to the contacts dictionary.
@@ -28,13 +62,14 @@ def add_contact(args, contacts):
         str: A message indicating the result of the operation.
     """
     if len(args) != 2:
-        return "Invalid arguments. Usage: add [name] [phone]"
+        raise ValueError("Invalid arguments. Usage: add [name] [phone]")
     name, phone = args
     if name in contacts:
-        return "Contact already exists."
+        raise KeyError("Contact already exists.")
     contacts[name] = phone
     return "Contact added."
 
+@input_error
 def change_contact(args, contacts):
     """
     Change the phone number of a contact.
@@ -47,14 +82,15 @@ def change_contact(args, contacts):
         str: A message indicating whether the contact was successfully updated or not.
     """
     if len(args) != 2:
-        return "Invalid arguments. Usage: change [name] [new phone]"
+        raise ValueError("Invalid arguments. Usage: change [name] [new phone]")
     name, phone = args
     if name in contacts:
         contacts[name] = phone
         return "Contact updated."
     else:
-        return "Contact not found."
+        raise KeyError("Contact not found.")
 
+@input_error
 def show_phone(args, contacts):
     """
     Display the phone number of a contact.
@@ -67,13 +103,14 @@ def show_phone(args, contacts):
         str: The phone number of the contact if found, or an error message if the contact is not found.
     """
     if len(args) != 1:
-        return "Invalid arguments. Usage: phone [name]"
+        raise ValueError("Invalid arguments. Usage: phone [name]")
     name = args[0]
     if name in contacts:
         return contacts[name]
     else:
-        return "Contact not found."
+        raise KeyError("Contact not found.")
 
+@input_error
 def show_all(contacts):
     """
     Returns a formatted string representation of all contacts.
@@ -93,6 +130,7 @@ def show_all(contacts):
         return "No contacts found."
     return "\n".join(f"{name}: {phone}" for name, phone in contacts.items())
 
+@input_error
 def main():
     """
     The main function of the assistant bot program.
